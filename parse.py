@@ -95,3 +95,11 @@ def start_process():
 
     xls_reader.put_stat_toxls(sqls)
 start_process()
+
+
+# https://www.wildberries.ru/catalog/0/search.aspx?search=Valliant&sort=popular
+# div class=pager
+# div class=pageToInsert
+# a class=around-active GET ALL PAGES
+# div class=dtList
+# a class=ref_goods_n_p get href
