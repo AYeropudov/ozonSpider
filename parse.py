@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from concurrent import futures
-
 from lxml import html
 from bs4 import BeautifulSoup
-import urllib
 import urllib3
 from tqdm import tqdm
 import collections
@@ -56,7 +54,7 @@ def parse_html2(uri):
     text = read_file(u"/home/alex/spider/html/{}.html".format(art))
     root = html.fromstring(text)
     results = root.xpath('//div[@class = "eItemProperties_text"]/text()')
-    price_div = root.xpath('//div[@class="bSaleColumn"]/span/text()')
+    price_div = root.xpath('.//*[@class="bSaleBlocksContainer"]/noscript/span/text()')
     description = ''
     price_str = ''
     for res in results:
@@ -87,16 +85,13 @@ sqls = []
 data_from_xls = xls_reader.get_arts_from_xls()
 arts_unique = data_from_xls[:]
 http = urllib3.PoolManager(10, headers=None, timeout=5, retries=1)
-#executor = futures.ThreadPoolExecutor(max_workers=10)
-#results_www = task_queue(parse_www, arts_unique, executor)
-executor = futures.ThreadPoolExecutor(max_workers=1)
-#results_html = task_queue(parse_html2, arts_unique, executor)
-#executor = futures.ThreadPoolExecutor(max_workers=2)
-#results_html2 = task_queue(parse_html, arts_unique, executor)
-#executor = futures.ThreadPoolExecutor(max_workers=4)
-results_html3 = task_queue(parse_html, arts_unique, executor)
-xls_reader.put_stat_toxls(sqls)
-#root = html.fromstring(html_string)
-#results = root.xpath('//div[@class = "eItemProperties_text"]/text()')
-#price_div = root.xpath('//div[@class="bSaleColumn"]/text()')
 
+def start_process():
+    executor = futures.ThreadPoolExecutor(max_workers=10)
+    results_www = task_queue(parse_www, arts_unique, executor)
+
+    executor = futures.ThreadPoolExecutor(max_workers=2)
+    results_html = task_queue(parse_html2, arts_unique, executor)
+
+    xls_reader.put_stat_toxls(sqls)
+start_process()
